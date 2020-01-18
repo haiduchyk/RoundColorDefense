@@ -6,60 +6,6 @@ public class EnemyPosition
     private static int indexOfFirstSimplePlatform = 3;
     [Inject] private EnemyController enemyController;
     
-    public Platform CalculateIndexOfNextPlatform(Enemy enemy)
-    {
-        
-        var nextIndex = IndexOfPlatformOnNextLayer(enemy);
-         
-        var nextPlatform = GetPlatformOnLayer(enemy.IndexOfLayer - 1, nextIndex);
-        if (nextPlatform.State != PlatformState.Type.Wall) return nextPlatform;
-        
-        
-        var curIndex = CurrentIndexOfEnemy(enemy);
-
-        var curPlatforms = GetPlatformsFromLayer(enemy.IndexOfLayer);
-        var nextPlatforms = GetPlatformsFromLayer(enemy.IndexOfLayer - 1);
-        
-        var curLength = curPlatforms.Length;
-        var nextLength = nextPlatforms.Length;
-
-        var leftIsBlocked = false;
-        var rightIsBlocked = false;
-
-        var coof = (double)  nextLength / curLength;
-        
-        for (var i = 1; i < curLength - 1; i++)
-        {
-            var leftIndex = (curIndex - i + curLength) % curLength;
-            if (!leftIsBlocked)
-            {
-                if (curPlatforms[leftIndex].State != PlatformState.Type.Wall)
-                {
-                    nextIndex = (int) (leftIndex * coof);
-                    nextPlatform = nextPlatforms[nextIndex];
-                    if (nextPlatform.State != PlatformState.Type.Wall) return curPlatforms[(curIndex - 1 + curLength) % curLength];
-                }
-                else leftIsBlocked = true;
-            }
-            
-            var rightIndex = (curIndex + i + curLength) % curLength;
-            
-            if (!rightIsBlocked)
-            {
-                if (curPlatforms[rightIndex].State != PlatformState.Type.Wall)
-                {
-                    nextIndex = (int) (rightIndex * coof);
-                    nextPlatform = nextPlatforms[nextIndex];
-                    if (nextPlatform.State != PlatformState.Type.Wall) return curPlatforms[(curIndex + 1 + curLength) % curLength];
-                }
-                else rightIsBlocked = true;
-
-            }
-
-        }
-        
-        return curPlatforms[curIndex];
-    }
     private int IndexOfPlatformOnNextLayer(Enemy enemy)
     {
         var curPlatform = enemy.platform;
@@ -109,6 +55,61 @@ public class EnemyPosition
      {
          var nextPlatforms = PlatformProvider.Instance.layers[numbOfLayer].currentPlatforms;
          return nextPlatforms[indexOfPlatform];
+     }
+     
+     public Platform GetNextPlatform(Enemy enemy)
+     {
+        
+         var nextIndex = IndexOfPlatformOnNextLayer(enemy);
+         
+         var nextPlatform = GetPlatformOnLayer(enemy.IndexOfLayer - 1, nextIndex);
+         if (nextPlatform.State != PlatformState.Type.Wall) return nextPlatform;
+        
+        
+         var curIndex = CurrentIndexOfEnemy(enemy);
+
+         var curPlatforms = GetPlatformsFromLayer(enemy.IndexOfLayer);
+         var nextPlatforms = GetPlatformsFromLayer(enemy.IndexOfLayer - 1);
+        
+         var curLength = curPlatforms.Length;
+         var nextLength = nextPlatforms.Length;
+
+         var leftIsBlocked = false;
+         var rightIsBlocked = false;
+
+         var coof = (double)  nextLength / curLength;
+        
+         for (var i = 1; i < curLength - 1; i++)
+         {
+             var leftIndex = (curIndex - i + curLength) % curLength;
+             if (!leftIsBlocked)
+             {
+                 if (curPlatforms[leftIndex].State != PlatformState.Type.Wall)
+                 {
+                     nextIndex = (int) (leftIndex * coof);
+                     nextPlatform = nextPlatforms[nextIndex];
+                     if (nextPlatform.State != PlatformState.Type.Wall) return curPlatforms[(curIndex - 1 + curLength) % curLength];
+                 }
+                 else leftIsBlocked = true;
+             }
+            
+             var rightIndex = (curIndex + i + curLength) % curLength;
+            
+             if (!rightIsBlocked)
+             {
+                 if (curPlatforms[rightIndex].State != PlatformState.Type.Wall)
+                 {
+                     nextIndex = (int) (rightIndex * coof);
+                     nextPlatform = nextPlatforms[nextIndex];
+                     if (nextPlatform.State != PlatformState.Type.Wall) return curPlatforms[(curIndex + 1 + curLength) % curLength];
+                 }
+                 else rightIsBlocked = true;
+
+             }
+
+         }
+        
+         return curPlatforms[curIndex];
      }
     
      private Platform[] GetPlatformsFromLayer(int index) => PlatformProvider.Instance.layers[index].currentPlatforms;

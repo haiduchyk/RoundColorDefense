@@ -19,7 +19,7 @@ public class EnemyController
     [Inject]
     private EnemyPosition enemyPosition;
     [Inject]
-    readonly SignalBus _signalBus;
+    private readonly SignalBus signalBus;
     [Inject]
     private ResourceManager resourceManager;
     [Inject]
@@ -36,7 +36,6 @@ public class EnemyController
             allEnemies[i] = new List<Enemy>();
         }
     }
-    
     
     private bool CanMove(Enemy enemy) =>
         PlatformProvider.Instance.layers[enemy.IndexOfLayer].currentPlatforms.IndexOf(enemy.platform) != -1;
@@ -56,8 +55,6 @@ public class EnemyController
 
     private bool LocateReturnedEnemy(Enemy enemy)
     {
-        var curPlatform = enemy.platform;
-        
         var prevPlatforms = enemyPosition.GetPrevPlatforms(enemy);
 
         var prevPlatform1 = prevPlatforms[0];
@@ -71,73 +68,60 @@ public class EnemyController
             DisconnectEnemy(enemy);
             ConnectEnemy(enemy, prevPlatform1);
         }
-        else if (prev1IsWall && prev2IsWall)
-        {
-            return false;
-        }
+        else if (prev1IsWall && prev2IsWall) return false;
         else if (prev1IsWall || prev2IsWall)
         {
             DisconnectEnemy(enemy);
             ConnectEnemy(enemy, prev1IsWall ? prevPlatform2 : prevPlatform1);
         }
-        else
-        {
-            var hp = enemy.Hp / 2;
-            if (hp == 0)
-            {
-                DisconnectEnemy(enemy);
-                ConnectEnemy(enemy, prevPlatform1);
-            } 
-            
-            var divideEnemy = enemySpawner.GenerateEnemy(curPlatform, hp);
-            divideEnemy.transform.position = curPlatform.transform.position;
-            
-            enemy.Hp = hp;
-            enemy.futureHp = hp;
-
-            DisconnectEnemy(enemy);
-            DisconnectEnemy(divideEnemy);
-            
-
-            ConnectEnemy(enemy, prevPlatform1);
-            ConnectEnemy(divideEnemy, prevPlatform2);
-
-            
-            MakeStepAnimation(new List<Enemy>() {divideEnemy}, speedForSimpleMove);
-            CheckForTrigger(new List<Enemy>() {divideEnemy});
-        }
+        else DivideEnemy(enemy, prevPlatform1, prevPlatform2);
+        
 
         return true;
     }
-    
+
+    private void DivideEnemy(Enemy enemy, Platform prevPlatform1, Platform prevPlatform2)
+    {
+        var hp = enemy.Hp / 2;
+        if (hp == 0)
+        {
+            DisconnectEnemy(enemy);
+            ConnectEnemy(enemy, prevPlatform1);
+            return;
+        } 
+            
+        var divideEnemy = enemySpawner.GenerateEnemy(enemy.platform, hp);
+        divideEnemy.transform.position = enemy.transform.position;
+            
+        enemy.Hp = hp;
+        enemy.futureHp = hp;
+
+        DisconnectEnemy(enemy);
+        DisconnectEnemy(divideEnemy);
+            
+        ConnectEnemy(enemy, prevPlatform1);
+        ConnectEnemy(divideEnemy, prevPlatform2);
+        
+        MakeStepAnimation(new List<Enemy>() {divideEnemy}, speedForSimpleMove);
+        CheckForTrigger(new List<Enemy>() {divideEnemy});
+    }
 
     public async void ReturnEnemy(ReturnEnemySignal signal)
-    {
-        if (!signal.platform.enemies.Any())
-        {
-            audioManager.Play("cancel");
-            return;
-        };
+    { 
         var enemy = signal.platform.enemies[0];
-        
         EasyTouch.SetEnabled(false);
-
         var success = LocateReturnedEnemy(enemy);
-
-        if (!success)
-        {
-            audioManager.Play("cancel");
-        }
+        
+        if (!success) audioManager.Play("cancel");
         else
         {
             resourceManager.DecreaseMoney(signal.platform.Price);
             MakeStepAnimation(new List<Enemy>() {enemy}, speedForSimpleMove);
             CheckForTrigger(new List<Enemy>() {enemy});
-            await WaitAll();
+            await Task.WhenAll(tasks);
             UpdateHp();
             ClearEnemies();
         }
-
         EasyTouch.SetEnabled(true);
     }
 
@@ -158,7 +142,7 @@ public class EnemyController
 
     private async Task<bool> AfterMovementOperations()
     {
-        await WaitAll();
+        await Task.WhenAll(tasks);
         ClearEnemies();
         UpdateHp();
         if (gameController.gameEnded)
@@ -207,15 +191,7 @@ public class EnemyController
             });
         }
     }
-
-    private async Task WaitAll()
-    {
-        foreach (var task in tasks)
-        {
-            await task;
-        }
-    }
-
+    
     private void MakeStepAnimation(List<Enemy> movableEnemies, float speed)
     {
         foreach (var enemy in movableEnemies)
@@ -238,23 +214,31 @@ public class EnemyController
     }
     private Platform GetNextPlatform(Enemy enemy)
     {
-        var nextPlatform = enemyPosition.CalculateIndexOfNextPlatform(enemy);
+        var nextPlatform = enemyPosition.GetNextPlatform(enemy);
         return nextPlatform;
     }
 
     private void CheckForTrigger(List<Enemy> movableEnemies)
+    {
+        CheckForTrap(movableEnemies);
+        CheckMoreThanOne(movableEnemies);
+    }
+
+    private void CheckMoreThanOne(List<Enemy> movableEnemies)
+    {
+        foreach (var enemy in movableEnemies)
+        {
+            var platform = enemy.platform;
+            if (AmountOfAliveEnemy(platform.enemies) > 1) MergeEnemies(platform.enemies);
+        }
+    }
+    private void CheckForTrap(List<Enemy> movableEnemies)
     {
         foreach (var enemy in movableEnemies)
         {        
             var platform = enemy.platform;
             if (platform.isTrap) DecreaseEnemyHp(enemy);
             if (enemy.IndexOfLayer == 0) EndGame(enemy);
-        }
-
-        foreach (var enemy in movableEnemies)
-        {
-            var platform = enemy.platform;
-            if (AmountOfAliveEnemy(platform.enemies) > 1) MergeEnemies(platform.enemies);
         }
     }
     private int AmountOfAliveEnemy(List<Enemy> enemies) => enemies.FindAll(enemy => !enemy.isDead).Count;

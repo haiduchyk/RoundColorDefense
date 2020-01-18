@@ -13,7 +13,7 @@ public class ResourceManager : MonoBehaviour
     public GameObject canvas;
     public Camera camera;
     public GameObject coinHandler;
-    const int initialAmountOfCoins = 30;
+    const int initialAmountOfCoins = 3;
     [SerializeField]
     private TextMeshProUGUI scoreView;
     [SerializeField]

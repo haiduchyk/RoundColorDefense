@@ -31,8 +31,6 @@ public class Field : MonoBehaviour
             layer.NextTurn();
         }
     }
-    
-
     private void GetLayers()
     {
         var layers = new ILayer[transform.childCount];

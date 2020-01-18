@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Linq;
 using System.Threading.Tasks;
 using UnityEngine;
 using Zenject;
@@ -70,8 +71,13 @@ public class SimplePlatform : Platform, IDoubleTapble, ISwipeble, ITapble
         {
             return;
         }
-        signalBus.Fire(new ReturnEnemySignal { platform = GetComponent<SimplePlatform>() });
-        UpdatePrice();
+
+        if (enemies.Any())
+        {
+            signalBus.Fire(new ReturnEnemySignal { platform = GetComponent<SimplePlatform>() });
+            UpdatePrice();
+        }
+
     }
     private void SetSpikeState()
     {
@@ -110,15 +116,15 @@ public class SimplePlatform : Platform, IDoubleTapble, ISwipeble, ITapble
         if (State == PlatformState.Type.Wall)
         {
             WallAmount--;
-            renderer.material.color = ColorProvider.Colors[WallAmount % lenOfColors];
             if (WallAmount == 0) DestroyWall();
+            else renderer.material.color = ColorProvider.Colors[WallAmount - 1 % lenOfColors];
         }
     }
 
     private async void DestroyWall()
     {
         state = PlatformState.Type.Simple;
-        await Task.Delay(700);
+        await Task.Delay(500);
         transform.localScale = new Vector3(transform.localScale.x, transform.localScale.y, 0.01f);
         renderer.material.color = initialColor;
     }

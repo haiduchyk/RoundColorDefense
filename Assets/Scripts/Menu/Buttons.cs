@@ -2,7 +2,7 @@
 using UnityEngine.SceneManagement;
 
 public class Buttons : MonoBehaviour
-{ 
+{
     [SerializeField]
     private AudioManager audioManager;
 

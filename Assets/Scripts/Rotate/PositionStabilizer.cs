@@ -116,10 +116,10 @@ public class PositionStabilizer : MonoBehaviour
     }
     public IEnumerator UpdateY()
     {
-        var v = Input.mousePosition;
-        v.z = 30;
-        v = camera.ScreenToWorldPoint(v);
-        var angleOfPlatform = Mathf.Atan2(v.z, v.x) * Mathf.Rad2Deg + CurrentAngleY;
+        var startPosition = Input.mousePosition;
+        startPosition.z = 30;
+        startPosition = camera.ScreenToWorldPoint(startPosition);
+        var angleOfPlatform = Mathf.Atan2(startPosition.z, startPosition.x) * Mathf.Rad2Deg + CurrentAngleY;
         while (true)
         {
             var touchPosition = Input.mousePosition;

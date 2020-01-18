@@ -15,6 +15,8 @@ public class ActionButton : MonoBehaviour
     private TapState.TypeOfTap CurType => !isActivated ? buttonState : TapState.TypeOfTap.Simple;
     [Inject]
     private TapState tapState;
+
+    private int size = 40;
     
     private void Start()
     {
@@ -39,7 +41,6 @@ public class ActionButton : MonoBehaviour
     
     public void OnTap()
     {
-        print(tapState.State);
         ChangeState();
     }
 
@@ -58,11 +59,11 @@ public class ActionButton : MonoBehaviour
     private void IncreaseSize()
     {
         var rect = rectTransform.rect; 
-        rectTransform.sizeDelta = new Vector2(rect.width + 10, rect.height + 10);
+        rectTransform.sizeDelta = new Vector2(rect.width + size, rect.height + size);
     }
     private void DecreaseSize()
     {
         var rect = rectTransform.rect; 
-        rectTransform.sizeDelta = new Vector2(rect.width - 10, rect.height - 10);
+        rectTransform.sizeDelta = new Vector2(rect.width - size, rect.height - size);
     }
 }

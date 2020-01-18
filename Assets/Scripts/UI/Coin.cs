@@ -5,7 +5,7 @@ using UnityEngine;
 
 public class Coin : MonoBehaviour
 {
-    private float speed = 8f;
+    private float speed = 10f;
     private float velocity = 0.7f;
     
     public async Task AppearAnimation(Vector3 target)
@@ -19,7 +19,7 @@ public class Coin : MonoBehaviour
                 target, 
                 Time.deltaTime * 300
             );
-            await Task.Delay(16);
+            await Task.Yield();
         }
     }
     public async Task MoveAnimation(Vector3 target)
@@ -34,7 +34,7 @@ public class Coin : MonoBehaviour
                 target, 
                 Time.deltaTime * speed * 100
             );
-            await Task.Delay(16);
+            await Task.Yield();
         }
         EndMove();
     }

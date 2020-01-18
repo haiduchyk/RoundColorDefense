@@ -1,6 +1,7 @@
 ﻿using System.Threading.Tasks;
 using TMPro;
 using UnityEngine;
+using UnityEngine.Experimental.PlayerLoop;
 
 public class Enemy : MonoBehaviour
 {
@@ -21,21 +22,15 @@ public class Enemy : MonoBehaviour
         get => hp;
         set
         {
-            hp = value > 0 ? value : 0;
-            var index = ColorProvider.Colors.Count - (hp % ColorProvider.Colors.Count) - 1;
+            hp = value > 1 ? value : 1;
+            var index = ColorProvider.Colors.Count - (hp % ColorProvider.Colors.Count);
             renderer.material.color = ColorProvider.Colors[index];
         }
     }
 
     [SerializeField] private TextMeshProUGUI hpView;
-    private Camera mainCamera;
     public bool isDead;
     public Platform platform;
-
-    private void Start()
-    {
-        mainCamera = Camera.main;
-    }
     
     public async Task UpdatePosition(float speed)
     {
@@ -48,7 +43,7 @@ public class Enemy : MonoBehaviour
                 target,
                 Time.deltaTime * speed
                 );
-            await Task.Delay(16);
+            await Task.Yield();
         }
         EndMove();
     }

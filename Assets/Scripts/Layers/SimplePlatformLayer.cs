@@ -58,8 +58,7 @@ public class SimplePlatformLayer : MonoBehaviour, ILayer
             Destroy(platform.gameObject);
         }
     }
-
-
+    
 
     public void TurnOnPrices()
     {
