@@ -25,7 +25,7 @@ public class EnemyController
     [Inject]
     private AudioManager audioManager;
 
-    [Inject] private GameController gameController;
+    [Inject] private GameResseter gameResseter;
     
     public void CreateEmptyEnemies()
     { 
@@ -130,8 +130,8 @@ public class EnemyController
     {
         EasyTouch.SetEnabled(false);
         await MoveExistEnemies();
-        var success = await AfterMovementOperations();
-        if (!success) return;
+        await AfterMovementOperations();
+        if (gameResseter.gameEnded) return;
         
         var newEnemies = CreateEnemies();
         await MoveNewEnemies(newEnemies);
@@ -140,17 +140,12 @@ public class EnemyController
         EasyTouch.SetEnabled(true);
     }
 
-    private async Task<bool> AfterMovementOperations()
+    private async Task AfterMovementOperations()
     {
         await Task.WhenAll(tasks);
         ClearEnemies();
         UpdateHp();
-        if (gameController.gameEnded)
-        {
-            gameController.EndGame();
-            return false;
-        }
-        return true;
+        if (gameResseter.gameEnded) gameResseter.EndGame();
     }
 
 
@@ -280,7 +275,7 @@ public class EnemyController
     private void EndGame(Enemy enemy)
     {
         KillEnemy(enemy);
-        gameController.gameEnded = true;
+        gameResseter.gameEnded = true;
     }
 
     public void DisconnectEnemy(Enemy enemy)

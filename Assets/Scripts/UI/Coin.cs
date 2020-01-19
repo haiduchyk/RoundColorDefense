@@ -5,9 +5,10 @@ using UnityEngine;
 
 public class Coin : MonoBehaviour
 {
-    private float speed = 10f;
-    private float velocity = 0.7f;
-    
+    private float speed = 6f;
+    const float velocity = 0.8f;
+    private const int appearingSpeed = 300;
+
     public async Task AppearAnimation(Vector3 target)
     {
         var rect = transform.GetComponent<RectTransform>();
@@ -17,7 +18,7 @@ public class Coin : MonoBehaviour
             rect.position = Vector3.MoveTowards(
                 rect.position,
                 target, 
-                Time.deltaTime * 300
+                Time.deltaTime * appearingSpeed
             );
             await Task.Yield();
         }

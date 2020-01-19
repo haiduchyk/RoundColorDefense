@@ -1519,7 +1519,7 @@ RectTransform:
   - {fileID: 1605142110}
   m_Father: {fileID: 0}
   m_RootOrder: 4
-  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+  m_LocalEulerAnglesHint: {x: 5.1990004, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 0}
   m_AnchorMax: {x: 0, y: 0}
   m_AnchoredPosition: {x: 0, y: 0}
@@ -1714,7 +1714,7 @@ GameObject:
   - component: {fileID: 1435956344}
   - component: {fileID: 1435956345}
   m_Layer: 0
-  m_Name: GameController
+  m_Name: GameResseter
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -2265,8 +2265,8 @@ MonoBehaviour:
   lose: {fileID: 0}
   win: {fileID: 0}
   tap: {fileID: 8300000, guid: 29bde6326b4c34ad8a12da475f79b50a, type: 3}
-  cancel: {fileID: 8300000, guid: c98243bffa6090e43a5cd70e7af504fc, type: 3}
-  coin: {fileID: 8300000, guid: 5ac6242608b593342802f2c42954d298, type: 3}
+  cancel: {fileID: 8300000, guid: 5c30179177bace444859ccc9995865c3, type: 3}
+  coin: {fileID: 8300000, guid: 52320e590bf774734a288886eba557ba, type: 3}
   musicSource: {fileID: 1819513049}
 --- !u!4 &1819513048
 Transform:
@@ -2850,7 +2850,7 @@ MonoBehaviour:
   tapState: {fileID: 1203175805}
   resourceManager: {fileID: 2101545206}
   audioManager: {fileID: 1819513047}
-  gameController: {fileID: 1435956345}
+  gameResseter: {fileID: 1435956345}
 --- !u!114 &2013662674
 MonoBehaviour:
   m_ObjectHideFlags: 0

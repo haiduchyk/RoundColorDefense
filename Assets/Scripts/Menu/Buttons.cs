@@ -12,9 +12,5 @@ public class Buttons : MonoBehaviour
         SceneManager.LoadScene("GamePlay");
     }
 
-    public void ChangeAudio()
-    {
-        PlayerPrefs.SetString("Music", PlayerPrefs.GetString("Music", "yes") != "no" ? "no" : "yes");
-    }
-    
+
 }

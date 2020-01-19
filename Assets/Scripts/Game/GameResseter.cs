@@ -2,7 +2,7 @@
 using UnityEngine;
 using Zenject;
 
-public class GameController : MonoBehaviour
+public class GameResseter : MonoBehaviour
 {
     [SerializeField]
     private GameObject endScreen;

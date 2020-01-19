@@ -3,7 +3,8 @@ using Zenject;
 
 public class EnemyPosition
 {
-    private static int indexOfFirstSimplePlatform = 3;
+    private static int indexOfFirstSimpleLayer = 3;
+    private static int indexOfLastSimpleLayer = 1;
     [Inject] private EnemyController enemyController;
     
     private int IndexOfPlatformOnNextLayer(Enemy enemy)
@@ -47,7 +48,11 @@ public class EnemyPosition
          var prevLength = prevPlatforms.Length;
         
          var prevIndex = (int) (curIndex * ((double) prevLength / curLength));
-         return enemy.IndexOfLayer == indexOfFirstSimplePlatform ? new[] {prevIndex, prevIndex} : new []{prevIndex, prevIndex + 1};
+
+         if (enemy.IndexOfLayer == indexOfFirstSimpleLayer) return new[] {prevIndex, prevIndex};
+         if (enemy.IndexOfLayer == indexOfLastSimpleLayer) return IndexOfPlatformOnSecondLayer(curPlatforms, curPlatform);
+         return new[] {prevIndex, prevIndex + 1};
+
      }
      private int CurrentIndexOfEnemy(Enemy enemy) => PlatformProvider.Instance.layers[enemy.IndexOfLayer].currentPlatforms.IndexOf(enemy.platform);
     
@@ -55,6 +60,26 @@ public class EnemyPosition
      {
          var nextPlatforms = PlatformProvider.Instance.layers[numbOfLayer].currentPlatforms;
          return nextPlatforms[indexOfPlatform];
+     }
+
+     private int[] IndexOfPlatformOnSecondLayer(Platform[] platforms, Platform platform)
+     {
+         var index1 = -1;
+         var index2 = -1;
+         for (var i = 0; i < platforms.Length; i++)
+         {
+             if (platforms[i] == platform)
+             {
+                 if (index1 == -1) index1 = i;
+                 else index2 = i;
+             }
+         }
+         return new[] {index1, index2};
+     }
+     
+     private void GetIndexesOfPlatform(ref int index1, ref int index2, Platform platform)
+     {
+
      }
      
      public Platform GetNextPlatform(Enemy enemy)

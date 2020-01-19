@@ -6,7 +6,7 @@ public static class GameBalance
 {
 
     private static int turn;
-    private static int maxAmount = 12;
+    private static int maxAmountOfEnemy = 12;
 
     public static void Reset()
     {
@@ -23,8 +23,8 @@ public static class GameBalance
 
     private static int[] Distribute(List<int> stats)
     {
-        var res = new int[maxAmount];
-        var indexes = Enumerable.Range(0, maxAmount - 1).ToList();
+        var res = new int[maxAmountOfEnemy];
+        var indexes = Enumerable.Range(0, maxAmountOfEnemy - 1).ToList();
         var len = stats.Count;
         
         for (var i = 0; i < len; i++)
@@ -40,7 +40,7 @@ public static class GameBalance
     
     private static List<int> GetStats()
     {
-        var amount = Random.Range(1, maxAmount / 2) + Random.Range(1, maxAmount / 2);
+        var amount = Random.Range(1, maxAmountOfEnemy / 2) + Random.Range(1, maxAmountOfEnemy / 2);
         var list = new List<int>();
 
         for (var i = 0; i < amount; i++)
@@ -68,9 +68,7 @@ public static class GameBalance
         return price;
     }
     
-    private static int PriceForSpikes(SimplePlatform platform) => (4 - platform.indexOfLayer) + platform.SpikesAmount;
-    private static int PriceForReturn(SimplePlatform platform) => (4 - platform.indexOfLayer) * turn;
-    private static int PriceForWall(SimplePlatform platform) => (4 - platform.indexOfLayer) * 2 + platform.WallAmount;
-
-
+    private static int PriceForSpikes(SimplePlatform platform) => (4 - platform.indexOfLayer) + platform.SpikesAmount * 3 / 2;
+    private static int PriceForReturn(SimplePlatform platform) => (4 - platform.indexOfLayer) * turn / 2;
+    private static int PriceForWall(SimplePlatform platform) => (4 - platform.indexOfLayer) * turn / 4 + platform.WallAmount;
 }

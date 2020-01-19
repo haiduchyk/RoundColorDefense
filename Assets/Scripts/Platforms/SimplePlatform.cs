@@ -125,7 +125,7 @@ public class SimplePlatform : Platform, IDoubleTapble, ISwipeble, ITapble
     {
         state = PlatformState.Type.Simple;
         await Task.Delay(500);
-        transform.localScale = new Vector3(transform.localScale.x, transform.localScale.y, 0.01f);
+        transform.localScale = new Vector3(transform.localScale.x, transform.localScale.y, 0.05f);
         renderer.material.color = initialColor;
     }
 

@@ -823,8 +823,12 @@ public class EasyTouch : MonoBehaviour {
 			finger.isOverGui = finger.isOverGui || IsTouchOverNGui(finger.position);
 		}
 
+		if (finger == null) return;
+
+		
 		// firing event ?
-		if ((enableUIMode || enabledNGuiMode)){
+		if ((enableUIMode || enabledNGuiMode))
+		{
 			firingEvent = !finger.isOverGui;
 		}
 

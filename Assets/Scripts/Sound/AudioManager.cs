@@ -22,7 +22,7 @@ public class AudioManager : MonoBehaviour
     }
     public void Play(string key)
     {
-        if (PlayerPrefs.GetString("Music") != "no")
+        if (PlayerPrefs.GetString("Music") == "on")
         {
             musicSource.clip = clips[key];
             musicSource.Play();

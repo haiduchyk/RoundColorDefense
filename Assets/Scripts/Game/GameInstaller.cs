@@ -8,7 +8,7 @@ public class GameInstaller : MonoInstaller
     public TapState tapState;
     public ResourceManager resourceManager;
     public AudioManager audioManager;
-    public GameController gameController;
+    public GameResseter gameResseter;
     public override void InstallBindings()
     {
         
@@ -16,7 +16,7 @@ public class GameInstaller : MonoInstaller
         Container.BindInstance(resourceManager);
         Container.BindInstance(tapState);
         Container.BindInstance(audioManager);
-        Container.BindInstance(gameController);
+        Container.BindInstance(gameResseter);
         
         Container.Bind<EnemyController>().AsSingle();
         Container.Bind<EnemyPosition>().AsSingle();

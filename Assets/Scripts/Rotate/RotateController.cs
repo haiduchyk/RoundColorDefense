@@ -135,7 +135,14 @@ public class RotateControllerForSecondLayer : IRotateController
         var oldBack = SimplePlatformLayer.backPlatforms;
         var index1 = -1;
         var index2 = -1;
-        
+        GetIndexesOfPlatform(ref index1, ref index2, platform);
+        var newFront = XZRearrange(oldFront, index1, index2);
+        var newBack = XZRearrange(oldBack, index1, index2);
+        SimplePlatformLayer.frontPlatforms = newFront;
+        SimplePlatformLayer.backPlatforms = newBack;
+    }
+    private void GetIndexesOfPlatform(ref int index1, ref int index2, Platform platform)
+    {
         for (var i = 0; i < SimplePlatformLayer.currentPlatforms.Length; i++)
         {
             if (SimplePlatformLayer.currentPlatforms[i] == platform)
@@ -144,10 +151,6 @@ public class RotateControllerForSecondLayer : IRotateController
                 else index2 = i;
             }
         }
-        var newFront = XZRearrange(oldFront, index1, index2);
-        var newBack = XZRearrange(oldBack, index1, index2);
-        SimplePlatformLayer.frontPlatforms = newFront;
-        SimplePlatformLayer.backPlatforms = newBack;
     }
     private Platform[] XZRearrange(Platform[] platforms, int index1, int index2)
     {
