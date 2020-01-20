@@ -1,7 +1,7 @@
 # RoundColorDefense
 # Conrtol platforms:
 Rotate
-<img src="https://imgflip.com/gif/3mo6ag" title="Example"/>
+<a href="https://imgflip.com/gif/3mo6ag"><img src="https://imgflip.com/gif/3mo6ag" title="made at imgflip.com"/></a>
 Flip
 <img src="https://imgflip.com/gif/3mo6g3" title="Example"/>
 # Use items for defense:
