@@ -8,6 +8,7 @@ using UnityEngine;
 
 public class Field : MonoBehaviour
 {
+    private ILayer[] layers => PlatformProvider.Instance.layers;
     public void CreateField()
     { 
         GetLayers();
@@ -16,7 +17,6 @@ public class Field : MonoBehaviour
     
     private void CreateLayers()
     {
-        var layers = PlatformProvider.Instance.layers;
         foreach (var layer in layers)
         {
             layer.CreatePlatforms();
@@ -25,10 +25,16 @@ public class Field : MonoBehaviour
 
     public void NextTurn()
     {
-        var layers = PlatformProvider.Instance.layers;
         foreach (var layer in layers)
         {
             layer.NextTurn();
+        }
+    }
+    public void ChangeState()
+    {
+        foreach (var layer in layers)
+        {
+            layer.ChangeState();
         }
     }
     private void GetLayers()
@@ -39,9 +45,19 @@ public class Field : MonoBehaviour
         }
         PlatformProvider.Instance.layers = layers;
     }
-    public void DestroyLayers()
+
+    public void Reset()
     {
-        var layers = PlatformProvider.Instance.layers;
+        RebuildLayers();
+    }
+
+    private void RebuildLayers()
+    {
+        DestroyLayers();
+        CreateLayers();
+    }
+    private void DestroyLayers()
+    {
         foreach (var layer in layers)
         {
             layer.DestroyLayer();

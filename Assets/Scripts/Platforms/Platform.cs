@@ -10,9 +10,12 @@ public class Platform : MonoBehaviour
     public int indexOfLayer;
     public List<Enemy> enemies = new List<Enemy>();
     public GameObject layer;
-    public virtual bool isTrap { get; set; }
+    public bool isTrap => SpikesAmount != 0;
+    public int SpikesAmount;
+    
     public float CurrentAngle => MathAngle.To360Degree(defaultAngleInLayer - transform.parent.rotation.eulerAngles.y);
     protected PlatformState.Type state = PlatformState.Type.Simple;
     public PlatformState.Type State => state;
-    
+    public virtual void NextTurn() {}
+    public virtual void ChangeState() {}
 }

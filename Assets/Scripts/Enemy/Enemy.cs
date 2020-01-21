@@ -23,7 +23,7 @@ public class Enemy : MonoBehaviour
         set
         {
             hp = value > 1 ? value : 1;
-            var index = ColorProvider.Colors.Count - (hp % ColorProvider.Colors.Count);
+            var index = (ColorProvider.Colors.Count - 1) - ((hp - 1) % ColorProvider.Colors.Count);
             renderer.material.color = ColorProvider.Colors[index];
         }
     }

@@ -3,24 +3,10 @@ using Zenject;
 
 public class GameRoot : MonoBehaviour
 {
-    [Inject]
-    private Field field;
-    [Inject]
-    private EnemyController enemyController;
+    [Inject] private SignalBus signalBus;
     
     public void Start()
     {
-        LoadField();
-        enemyController.CreateEmptyEnemies();
-        StartGameProcess();
-    }
-
-    private void LoadField()
-    {
-        field.CreateField();
-    }
-    
-    private void StartGameProcess()
-    {
+        signalBus.Fire<InitGameSignal>();
     }
 }

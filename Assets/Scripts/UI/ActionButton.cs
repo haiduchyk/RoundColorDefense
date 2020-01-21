@@ -14,7 +14,7 @@ public class ActionButton : MonoBehaviour
     private TapState.TypeOfTap buttonState;
     private TapState.TypeOfTap CurType => !isActivated ? buttonState : TapState.TypeOfTap.Simple;
     [Inject]
-    private TapState tapState;
+    private SignalBus signalBus;
 
     private int size = 40;
     
@@ -46,7 +46,7 @@ public class ActionButton : MonoBehaviour
 
     private void ChangeState()
     {
-        tapState.ChangeState(CurType);
+        signalBus.Fire(new ChangeTapStateSignal{type = CurType});        
     }
 
     private void ChangeSprite()

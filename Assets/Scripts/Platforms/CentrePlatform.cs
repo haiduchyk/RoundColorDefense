@@ -7,7 +7,6 @@ public class CentrePlatform : Platform, ITapble
 {
     [Inject]
     readonly SignalBus _signalBus;
-    [Inject] private TapState tapState;
 
     void Start()
     {
@@ -16,6 +15,6 @@ public class CentrePlatform : Platform, ITapble
 
     public void OnTap()
     {
-        if (tapState.State == TapState.TypeOfTap.Simple) _signalBus.Fire<NextTurnSignal>();
+        if (TapState.Instance.State == TapState.TypeOfTap.Simple) _signalBus.Fire<NextTurnSignal>();
     }
 }

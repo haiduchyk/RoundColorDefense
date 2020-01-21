@@ -5,7 +5,7 @@ public class EnemyPosition
 {
     private static int indexOfFirstSimpleLayer = 3;
     private static int indexOfLastSimpleLayer = 1;
-    [Inject] private EnemyController enemyController;
+    [Inject] private EnemyMover enemyMover;
     
     private int IndexOfPlatformOnNextLayer(Enemy enemy)
     {
@@ -14,7 +14,7 @@ public class EnemyPosition
         var curPlatforms = GetPlatformsFromLayer(enemy.IndexOfLayer); 
         var nextPlatforms = GetPlatformsFromLayer(enemy.IndexOfLayer - 1); 
         
-        enemyController.DisconnectEnemy(enemy);
+        enemyMover.DisconnectEnemy(enemy);
         
         var curIndex = curPlatforms.IndexOf(curPlatform);
         
@@ -76,12 +76,7 @@ public class EnemyPosition
          }
          return new[] {index1, index2};
      }
-     
-     private void GetIndexesOfPlatform(ref int index1, ref int index2, Platform platform)
-     {
 
-     }
-     
      public Platform GetNextPlatform(Enemy enemy)
      {
         

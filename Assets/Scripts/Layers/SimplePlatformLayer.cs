@@ -46,11 +46,20 @@ public class SimplePlatformLayer : MonoBehaviour, ILayer
 
     public void NextTurn()
     {
-        foreach (SimplePlatform platform in currentPlatforms)
+        foreach (var platform in currentPlatforms)
         {
             platform.NextTurn();
         }
     }
+
+    public void ChangeState()
+    {
+        foreach (var platform in currentPlatforms)
+        {
+            platform.ChangeState();
+        }
+    }
+    
     private void DestroyPlatforms(Platform[] platforms)
     {
         foreach (var platform in platforms)

@@ -8,7 +8,7 @@ public class EnemySpawner
     private const int indexOfEmptyLayer = 5;
     private readonly Vector3 newEnemiesSpawnPoint = new Vector3(0, 15f, 0f);
     [Inject]
-    private EnemyController enemyController;
+    private EnemyMover enemyMover;
 
     public EnemySpawner(GameObject enemyPrefab)
     {
@@ -44,7 +44,7 @@ public class EnemySpawner
         var enemy = enemyObject.GetComponent<Enemy>();
         enemy.futureHp = hp;
         enemy.Hp = hp;
-        enemyController.ConnectEnemy(enemy, emptyPlatform);
+        enemyMover.ConnectEnemy(enemy, emptyPlatform);
         return enemy;
     }
 }

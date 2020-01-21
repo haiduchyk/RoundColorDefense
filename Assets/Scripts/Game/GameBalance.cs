@@ -50,10 +50,10 @@ public static class GameBalance
         return list;
     }
     
-    public static int GetPrice(SimplePlatform platform, TapState tapState)
+    public static int GetPrice(SimplePlatform platform)
     {
         var price = 0;
-        switch (tapState.State)
+        switch (TapState.Instance.State)
         {
             case TapState.TypeOfTap.Wall:
                 price = PriceForWall(platform);
@@ -70,5 +70,5 @@ public static class GameBalance
     
     private static int PriceForSpikes(SimplePlatform platform) => (4 - platform.indexOfLayer) + platform.SpikesAmount * 3 / 2;
     private static int PriceForReturn(SimplePlatform platform) => (4 - platform.indexOfLayer) * turn / 2;
-    private static int PriceForWall(SimplePlatform platform) => (4 - platform.indexOfLayer) * turn / 4 + platform.WallAmount;
+    private static int PriceForWall(SimplePlatform platform) => (4 - platform.indexOfLayer) * turn / 5 + platform.WallAmount;
 }

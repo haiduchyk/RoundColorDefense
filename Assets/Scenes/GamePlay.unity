@@ -376,7 +376,7 @@ Light:
   m_BounceIntensity: 1
   m_ColorTemperature: 6570
   m_UseColorTemperature: 0
-  m_BoundingSphereOverride: {x: 1, y: 0, z: 0, w: 0}
+  m_BoundingSphereOverride: {x: 0, y: 0, z: 0, w: 0}
   m_UseBoundingSphereOverride: 0
   m_ShadowRadius: 0
   m_ShadowAngle: 0
@@ -2847,7 +2847,7 @@ MonoBehaviour:
   field: {fileID: 1284997151}
   enemyPrefab: {fileID: 5422272368201184959, guid: f34098a1bd3e9d54eb3ccf4a453b16ba,
     type: 3}
-  tapState: {fileID: 1203175805}
+  actionButtonView: {fileID: 1203175805}
   resourceManager: {fileID: 2101545206}
   audioManager: {fileID: 1819513047}
   gameResseter: {fileID: 1435956345}

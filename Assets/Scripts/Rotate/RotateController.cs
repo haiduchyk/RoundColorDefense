@@ -70,16 +70,6 @@ public class SimpleRotateController : IRotateController
         for (var i = 0; i < len / 2; i++)
         {
             
-//            var oldPosition1 = (i + index + len) % len;
-//            var newPosition1 = (oldPosition1 + shift + len) % len;
-//            
-//            var oldPosition2 = (i + index + len / 2) % len;
-//            var newPosition2 = (oldPosition2 + shift + len) % len;
-//            copy[oldPosition1] = platforms[newPosition1];
-//            copy[newPosition1] = platforms[oldPosition1];
-//            copy[oldPosition2] = platforms[newPosition2];
-//            copy[newPosition2] = platforms[oldPosition2];
-
             copy[(i + index + len) % len] = platforms[(i + index + shift + len) % len];
             copy[(i + index + shift + len) % len] = platforms[(i + index + len) % len];
             copy[(i + index + len / 2) % len] = platforms[(i + index + shift + len / 2) % len];

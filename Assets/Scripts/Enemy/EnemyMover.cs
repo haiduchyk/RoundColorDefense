@@ -6,10 +6,10 @@ using ModestTree;
 using Zenject;
 using Object = UnityEngine.Object;
 
-public class EnemyController
+public class EnemyMover
 {
     const float speedForSimpleMove = 10f;
-    const float speedForAppearing = 17f;
+    const float speedForAppearingMove = 17f;
     const int amountOfLayers = 6;
     private readonly List<Task> tasks = new List<Task>();
     private List<Enemy>[] allEnemies = new List<Enemy>[amountOfLayers];
@@ -21,13 +21,12 @@ public class EnemyController
     [Inject]
     private readonly SignalBus signalBus;
     [Inject]
-    private ResourceManager resourceManager;
+    private ResourceHolder resourceHolder;
     [Inject]
     private AudioManager audioManager;
-
-    [Inject] private GameResseter gameResseter;
+    [Inject] private GameResetter gameResetter;
     
-    public void CreateEmptyEnemies()
+    private void CreateEnemiesList()
     { 
         allEnemies = new List<Enemy>[amountOfLayers];
 
@@ -115,23 +114,22 @@ public class EnemyController
         if (!success) audioManager.Play("cancel");
         else
         {
-            resourceManager.DecreaseMoney(signal.platform.Price);
+            resourceHolder.DecreaseMoney(signal.platform.Price);
             MakeStepAnimation(new List<Enemy>() {enemy}, speedForSimpleMove);
             CheckForTrigger(new List<Enemy>() {enemy});
             await Task.WhenAll(tasks);
             UpdateHp();
-            ClearEnemies();
+            ClearDeadEnemies();
         }
         EasyTouch.SetEnabled(true);
     }
-
 
     public async void NextTurn()
     {
         EasyTouch.SetEnabled(false);
         await MoveExistEnemies();
         await AfterMovementOperations();
-        if (gameResseter.gameEnded) return;
+        if (gameResetter.gameEnded) return;
         
         var newEnemies = CreateEnemies();
         await MoveNewEnemies(newEnemies);
@@ -143,9 +141,9 @@ public class EnemyController
     private async Task AfterMovementOperations()
     {
         await Task.WhenAll(tasks);
-        ClearEnemies();
+        ClearDeadEnemies();
         UpdateHp();
-        if (gameResseter.gameEnded) gameResseter.EndGame();
+        if (gameResetter.gameEnded) gameResetter.EndGame();
     }
 
 
@@ -161,7 +159,7 @@ public class EnemyController
     
     private async Task MoveNewEnemies(List<Enemy> newEnemies)
     {
-        await MoveEnemies(newEnemies, speedForAppearing); 
+        await MoveEnemies(newEnemies, speedForAppearingMove); 
     }
 
     private async Task MoveEnemies(List<Enemy> enemies, float speed)
@@ -171,7 +169,7 @@ public class EnemyController
         CheckForTrigger(enemies);
     }
 
-    private void ClearEnemies()
+    private void ClearDeadEnemies()
     {
         foreach (var layerEnemies in allEnemies)
         {
@@ -240,16 +238,16 @@ public class EnemyController
     private void DecreaseEnemyHp(Enemy enemy)
     {
         var platform = (SimplePlatform) enemy.platform;
-        
         var losedHp = enemy.futureHp - platform.SpikesAmount >= 0 ? platform.SpikesAmount : enemy.futureHp;
-        
-        resourceManager.GenerateCoins(enemy.Target, losedHp);
-
+        signalBus.Fire(new GenerateCoinsSignal(losedHp, enemy.Target));
         enemy.futureHp -= platform.SpikesAmount;
-        
         if (enemy.futureHp < 1) KillEnemy(enemy);
     }
     
+    public void Reset()
+    {
+        CreateEnemiesList();
+    }
 
     private void MergeEnemies(List<Enemy> enemies)
     {
@@ -275,7 +273,7 @@ public class EnemyController
     private void EndGame(Enemy enemy)
     {
         KillEnemy(enemy);
-        gameResseter.gameEnded = true;
+        gameResetter.gameEnded = true;
     }
 
     public void DisconnectEnemy(Enemy enemy)

@@ -2,35 +2,29 @@
 using UnityEngine;
 using Zenject;
 
-public class GameResseter : MonoBehaviour
+public class GameResetter : MonoBehaviour
 {
     [SerializeField]
     private GameObject endScreen;
     [SerializeField] 
-    private Score score;
+    private HighScore highScore;
     [Inject] 
-    private EnemyController enemyController;
+    private ResourceHolder resourceHolder;
     [Inject] 
-    private Field field;
-    [Inject] 
-    private ResourceManager resourceManager;
+    private SignalBus signalBus;
     
     public bool gameEnded;
     public void EndGame()
     {
         if (!gameEnded) return;
-        score.SaveScore();
         EasyTouch.SetEnabled(true);
         endScreen.SetActive(true);
     }
     
     public void Restart()
     {
-        field.DestroyLayers();
+        signalBus.Fire<RestartGameSignal>();
         gameEnded = false;
-        enemyController.CreateEmptyEnemies();
-        field.CreateField();
-        resourceManager.Reset();
         GameBalance.Reset();
         endScreen.SetActive(false);
     }

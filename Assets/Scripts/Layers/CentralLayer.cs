@@ -3,10 +3,9 @@
 public class CentralLayer : MonoBehaviour, ILayer
 {
     [SerializeField] private GameObject platformPrefab;
-
     public Platform[] currentPlatforms { get; private set; }
-
-    [SerializeField] private int indexOfLayer;
+    [SerializeField] 
+    private int indexOfLayer;
     
     public void CreatePlatforms()
     {
@@ -23,7 +22,6 @@ public class CentralLayer : MonoBehaviour, ILayer
     {
         Destroy(currentPlatforms[0].gameObject);
     }
-    public void NextTurn()
-    {
-    }
+    public void NextTurn() { }
+    public void ChangeState() { }
 }

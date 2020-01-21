@@ -7,16 +7,13 @@ using Zenject;
 public class SimplePlatform : Platform, IDoubleTapble, ISwipeble, ITapble
 {
     public SignalBus signalBus;
-    private TapState tapState;
-    public override bool isTrap => SpikesAmount != 0;
     private Renderer renderer;
     private TextPlatform priceView;
     [SerializeField] 
     private GameObject spikes;
     public int lenOfColors = ColorProvider.Colors.Count;
-    public ResourceManager resourceManager;
+    public ResourceHolder resourceHolder;
     private readonly Color32 initialColor = new Color32(130, 131, 161, 255);
-    public int SpikesAmount;
     public int WallAmount;
     
     private const float highOfWall = 0.4f;
@@ -31,12 +28,11 @@ public class SimplePlatform : Platform, IDoubleTapble, ISwipeble, ITapble
         layer = transform.parent.parent.gameObject;
         renderer = GetComponent<Renderer>();
         priceView = GetComponent<TextPlatform>();
-        resourceManager = FindObjectOfType<ResourceManager>();
-        tapState = FindObjectOfType<TapState>();
+        resourceHolder = FindObjectOfType<ResourceHolder>();
     }
     public void OnDoubleTap(Platform platformComponent)
     {
-        if (tapState.State == TapState.TypeOfTap.Simple)
+        if (TapState.Instance.State == TapState.TypeOfTap.Simple)
         {
             StartCoroutine(layer.GetComponent<PositionStabilizer>().UpdateXZ(platformComponent));
         }
@@ -52,7 +48,7 @@ public class SimplePlatform : Platform, IDoubleTapble, ISwipeble, ITapble
     }
     public void OnTap()
     {
-        switch (tapState.State)
+        switch (TapState.Instance.State)
         {
             case TapState.TypeOfTap.Wall:
                 SetWallState();
@@ -67,7 +63,7 @@ public class SimplePlatform : Platform, IDoubleTapble, ISwipeble, ITapble
     }
     private void ReturnEnemy()
     {
-        if (!resourceManager.ValidateOperation(Price))
+        if (!resourceHolder.ValidateOperation(Price))
         {
             return;
         }
@@ -82,18 +78,18 @@ public class SimplePlatform : Platform, IDoubleTapble, ISwipeble, ITapble
     private void SetSpikeState()
     {
         var price = Convert.ToInt32(priceView.nameLabel.text);
-        if (!resourceManager.ValidateOperation(price)) return;
+        if (!resourceHolder.ValidateOperation(price)) return;
         
         if (enemies.Count > 0) return;
         if (State == PlatformState.Type.Wall) return;
         CreateSpikes();
         state = PlatformState.Type.Spike;
-        resourceManager.DecreaseMoney(Price);
+        resourceHolder.DecreaseMoney(Price);
         UpdatePrice();
     }
     private void SetWallState()
     {
-        if (!resourceManager.ValidateOperation(Price))
+        if (!resourceHolder.ValidateOperation(Price))
         {
             return;
         }
@@ -101,23 +97,29 @@ public class SimplePlatform : Platform, IDoubleTapble, ISwipeble, ITapble
         if (State == PlatformState.Type.Spike) return;
         CreateWall();
         state = PlatformState.Type.Wall;
-        resourceManager.DecreaseMoney(Price);
+        resourceHolder.DecreaseMoney(Price);
 
         UpdatePrice();
     }
 
-    public void NextTurn()
+    public override void NextTurn()
     {
         DecreaseWallHp();
     }
-    
+
+    public override void ChangeState()
+    {
+        if (TapState.Instance.State == TapState.TypeOfTap.Simple) TurnOffPriceView();
+        else TurnOnPriceView();
+    }
+
     private void DecreaseWallHp()
     {
         if (State == PlatformState.Type.Wall)
         {
             WallAmount--;
-            if (WallAmount == 0) DestroyWall();
-            else renderer.material.color = ColorProvider.Colors[WallAmount - 1 % lenOfColors];
+            if (WallAmount < 1) DestroyWall();
+            else renderer.material.color = ColorProvider.Colors[(WallAmount - 1) % lenOfColors];
         }
     }
 
@@ -145,11 +147,11 @@ public class SimplePlatform : Platform, IDoubleTapble, ISwipeble, ITapble
     }
     public void TurnOnPriceView()
     {
-        Price = GameBalance.GetPrice(this, tapState);
+        Price = GameBalance.GetPrice(this);
         priceView.UpdatePosition();
     }
     private void UpdatePrice()
     {
-        Price = GameBalance.GetPrice(this, tapState);
+        Price = GameBalance.GetPrice(this);
     }
 }

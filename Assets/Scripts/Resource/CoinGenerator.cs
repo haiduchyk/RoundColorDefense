@@ -1,29 +1,24 @@
-﻿using System;
-using System.Collections;
+﻿using System.Collections;
 using System.Collections.Generic;
 using System.Threading.Tasks;
-using TMPro;
 using UnityEngine;
 using Zenject;
-using Random = UnityEngine.Random;
 
-public class ResourceManager : MonoBehaviour
-{ 
-    public GameObject coinPrefab;
-    public GameObject canvas;
-    public Camera camera;
+public class CoinGenerator : MonoBehaviour
+{
+    [Inject] 
+    private ResourceHolder resourceHolder;
+    [SerializeField]
+    private GameObject coinPrefab;
+    [SerializeField]
+    private GameObject canvas;
+    private Camera camera;
     public GameObject coinHandler;
-    const int initialAmountOfCoins = 3;
-    const int delayBetweenCoins = 30;
     private const int delayAfterCoinsAppearing = 300;
-    [SerializeField]
-    private TextMeshProUGUI scoreView;
-    [SerializeField]
-    private TextMeshProUGUI coinView; 
+    const int delayBetweenCoins = 30;
+    private bool resized;
     [Inject] 
     private AudioManager audioManager;
-    
-    private bool resized;
     private bool IsResized
     {
         get => resized;
@@ -34,35 +29,15 @@ public class ResourceManager : MonoBehaviour
         }
     }
 
-    public void Reset()
-    {
-        Coins = initialAmountOfCoins;
-        Score = 0;
-    }
-    
-    public void DecreaseMoney(int amount) => Coins -= amount;
-    public bool ValidateOperation(int price) => Coins >= price;
-
-    public int Score
-    {
-        get => Convert.ToInt32(scoreView.text);
-        set => scoreView.text = value.ToString();
-    }
-
-    private int Coins
-    {
-        get => Convert.ToInt32(coinView.text);
-        set => coinView.text = value.ToString();
-    }
-    
     void Start()
     {
         camera = Camera.main;
-        Coins = initialAmountOfCoins;
     }
     
-    public async void GenerateCoins(Vector3 position, int amount)
+    public async void GenerateCoins(GenerateCoinsSignal signal)
     {
+        var amount = signal.amount;
+        var position = signal.position;
         UpdateScore(amount);
         var tasks = new List<Task>();
         var coins = new List<Coin>();
@@ -81,7 +56,7 @@ public class ResourceManager : MonoBehaviour
         MakeMoveAnimation(coins);
     }
 
-    private void UpdateScore(int amount) => Score += amount;
+    private void UpdateScore(int amount) => resourceHolder.Score += amount;
 
 
     private Vector2 AreaWithHoleInside(int areaRadius, int holeRadius)
@@ -113,7 +88,7 @@ public class ResourceManager : MonoBehaviour
         } 
         StartCoroutine(Resize());
         audioManager.Play("coin");
-        Coins++;
+        resourceHolder.Coins++;
     }
 
     private IEnumerator Resize()

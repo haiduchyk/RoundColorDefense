@@ -48,10 +48,9 @@ public class  EmptyLayer : MonoBehaviour, ILayer
         
         SetPositionInArray(platform, numberOfPlatform);
     }
-    public void NextTurn()
-    {
-    }
-    
+    public void NextTurn() { }
+    public void ChangeState() { }
+
     private void SetPositionInArray(Platform platform, int numberOfPlatform)
     {
         currentPlatforms[numberOfPlatform] = platform.GetComponent<Platform>();

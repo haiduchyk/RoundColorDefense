@@ -4,11 +4,8 @@ using Unity.Collections.LowLevel.Unsafe;
 using UnityEngine;
 using Zenject;
 
-public class TapState : MonoBehaviour
+public class ActionButtonView : MonoBehaviour
 {
-    public TypeOfTap State => state;
-    private TypeOfTap state = TypeOfTap.Simple;
-
     [SerializeField]
     private ActionButton wallButton;
     [SerializeField]
@@ -16,14 +13,6 @@ public class TapState : MonoBehaviour
     [SerializeField]
     private ActionButton returnButton;
     
-    public enum TypeOfTap
-    {
-        Wall,
-        Simple,
-        Spike,
-        Return
-    }
-
     private void DisableAllButtons()
     {
         wallButton.DisActivate();
@@ -33,60 +22,41 @@ public class TapState : MonoBehaviour
     
     private void SetWallState()
     {
-        state = TypeOfTap.Wall;
         DisableAllButtons();
         wallButton.Activate();
-        ShowPrices();
     }
 
     private void SetReturnState()
     {
-        state = TypeOfTap.Return;
         DisableAllButtons();
         returnButton.Activate();
-        ShowPrices();
     }
     
     private void SetSpikeState()
     {
-        state = TypeOfTap.Spike;
         DisableAllButtons();
         spikeButton.Activate();
-        ShowPrices();
     }
     
     private void SetSimpleState()
     {
-        state = TypeOfTap.Simple;
         DisableAllButtons();
-        HidePrices();
     }
-
-    private void ShowPrices()
+    
+    public void ChangeState(ChangeTapStateSignal signal)
     {
-        foreach (var layer in PlatformProvider.Instance.layers) 
-            if (layer is SimplePlatformLayer l) l.TurnOnPrices();
-    }
-    private void HidePrices()
-    {
-        foreach (var layer in PlatformProvider.Instance.layers) 
-            if (layer is SimplePlatformLayer l) l.TurnOffPrices();
-    }
-
-    public void ChangeState(TypeOfTap state)
-    {
-        switch (state)
+        switch (signal.type)
         {
-            case TypeOfTap.Simple:
+            case TapState.TypeOfTap.Simple:
                 SetSimpleState();
                 break;
-            case TypeOfTap.Wall:
+            case TapState.TypeOfTap.Wall:
                 SetWallState();
                 break;
-            case TypeOfTap.Spike:
+            case TapState.TypeOfTap.Spike:
                 SetSpikeState();
                 break;
-            case TypeOfTap.Return:
+            case TapState.TypeOfTap.Return:
                 SetReturnState();
                 break;
         }
