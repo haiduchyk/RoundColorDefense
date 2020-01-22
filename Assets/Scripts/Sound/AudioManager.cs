@@ -4,11 +4,12 @@ using UnityEngine;
 public class AudioManager : MonoBehaviour
 {
     [SerializeField]
-    private AudioClip lose, win, tap, cancel, coin;
-    public AudioSource musicSource;
+    private AudioClip lose, win, tap, cancel, coin, buy;
+    [SerializeField]
+    private AudioSource musicSource;
     private Dictionary<string, AudioClip> clips;
-    
-    void Start()
+
+    private void Start()
     {
         musicSource.clip = tap;
         clips = new Dictionary<string, AudioClip>()
@@ -17,10 +18,11 @@ public class AudioManager : MonoBehaviour
             {"win", win}, 
             {"lose", lose},
             {"cancel", cancel},
-            {"coin", coin}
+            {"coin", coin},
+            {"buy", buy}
         };
     }
-    public void Play(string key)
+    private void Play(string key)
     {
         if (PlayerPrefs.GetString("Music") == "on")
         {
@@ -28,5 +30,13 @@ public class AudioManager : MonoBehaviour
             musicSource.Play();
         }
     }
+
+    public void CoinReceived() => Play("coin");
+    public void EndGame() => Play("lose");
+    public void Cancel() => Play("cancel");
+    public void Tap() => Play("tap");
+    public void Buy() => Play("buy");
+
+    
 }
 

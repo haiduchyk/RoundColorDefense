@@ -79,8 +79,15 @@ public class GameInstaller : MonoInstaller
 
         Container.BindSignal<EndGameSignal>()
             .ToMethod<GameResetter>(x => x.EndGame).FromResolve();
+        Container.BindSignal<EndGameSignal>()
+            .ToMethod<AudioManager>(x => x.EndGame).FromResolve();
         
         Container.BindSignal<DecreaseMoneySignal>()
             .ToMethod<ResourceHolder>(x => x.DecreaseMoney).FromResolve();
+        Container.BindSignal<DecreaseMoneySignal>()
+            .ToMethod<AudioManager>(x => x.Buy).FromResolve();
+
+        Container.BindSignal<CoinReceivedSignal>()
+            .ToMethod<AudioManager>(x => x.CoinReceived);
     }
 }

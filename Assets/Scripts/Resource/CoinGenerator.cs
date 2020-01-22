@@ -18,7 +18,7 @@ public class CoinGenerator : MonoBehaviour
     const int delayBetweenCoins = 30;
     private bool resized;
     [Inject] 
-    private AudioManager audioManager;
+    private SignalBus signalBus;
     private bool IsResized
     {
         get => resized;
@@ -87,7 +87,7 @@ public class CoinGenerator : MonoBehaviour
             IsResized = !IsResized;
         } 
         StartCoroutine(Resize());
-        audioManager.Play("coin");
+        signalBus.Fire<CoinReceivedSignal>();
         resourceHolder.Coins++;
     }
 

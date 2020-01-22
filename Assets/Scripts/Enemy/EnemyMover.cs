@@ -20,10 +20,6 @@ public class EnemyMover
     private EnemyPosition enemyPosition;
     [Inject]
     private readonly SignalBus signalBus;
-    [Inject]
-    private ResourceHolder resourceHolder;
-    [Inject]
-    private AudioManager audioManager;
     
     private void CreateEnemiesList()
     { 
@@ -106,17 +102,17 @@ public class EnemyMover
 
     public async void ReturnEnemy(ReturnEnemySignal signal)
     { 
-        var enemy = signal.platform.enemies[0];
         EasyTouch.SetEnabled(false);
+        var enemy = signal.platform.enemies[0];
         var success = LocateReturnedEnemy(enemy);
         
-        if (!success) audioManager.Play("cancel");
+        if (!success) signalBus.Fire<CancelOperationSignal>();
         else
         {
             signalBus.Fire(new DecreaseMoneySignal { amount = signal.platform.Price });
             MakeStepAnimation(new List<Enemy>() {enemy}, speedForSimpleMove);
             CheckForTrigger(new List<Enemy>() {enemy});
-            AfterMovementOperations();
+            await AfterMovementOperations();
         }
         EasyTouch.SetEnabled(true);
     }
