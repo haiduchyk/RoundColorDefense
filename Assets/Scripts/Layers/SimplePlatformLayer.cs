@@ -15,21 +15,16 @@ public class SimplePlatformLayer : MonoBehaviour, ILayer
     private float angleForPlatform;
     [SerializeField] 
     private int indexOfLayer;
-
+    [Inject] 
+    private TapState tapState;
+    [Inject]
+    public GameBalance gameBalance;
     private Transform front;
     private Transform back;
-    private float spaceBetweenLayer = 0.001f;
-    private bool first;
-    public Platform[] currentPlatforms
-    {
-        get => isRotated ? backPlatforms : frontPlatforms;
-        set
-        {
-            if (isRotated) backPlatforms = value;
-            else frontPlatforms = value;
-        }
-    }
+    private float spaceBetweenLayers = 0.001f;
     
+    public Platform[] currentPlatforms => isRotated ? backPlatforms : frontPlatforms;
+        
     public Platform[] frontPlatforms;
     public Platform[] backPlatforms;
 
@@ -67,27 +62,6 @@ public class SimplePlatformLayer : MonoBehaviour, ILayer
             Destroy(platform.gameObject);
         }
     }
-    
-
-    public void TurnOnPrices()
-    {
-        var platforms = currentPlatforms;
-        for (var i = 0; i < frontPlatforms.Length; i++)
-        {
-            var platform = (SimplePlatform) platforms[i];
-            platform.TurnOnPriceView();
-        }
-    }
-
-    public void TurnOffPrices()
-    {
-        var platforms = currentPlatforms;
-        for (var i = 0; i < frontPlatforms.Length; i++)
-        {
-            var platform = (SimplePlatform) platforms[i];
-            platform.TurnOffPriceView();
-        }
-    }
 
     public void CreatePlatforms()
     {
@@ -119,22 +93,20 @@ public class SimplePlatformLayer : MonoBehaviour, ILayer
         var angle = 360 - numberOfPlatform * AngelBetweenPlatforms;
 
         var frontPlatform = CreatePlatform(front, 1);
+        var backPlatform = CreatePlatform(back, -1);
 
         SetFrontPlatformRotation(angle, frontPlatform);
-
-        if (AmountOfPlatforms == 1) return;
-
-        var backPlatform = CreatePlatform(back, -1);
-        
         SetBackPlatformRotation(angle, backPlatform);
-        AdditionalComponents(frontPlatform);
-        AdditionalComponents(backPlatform);
+        
+        frontPlatform.GetComponent<SimplePlatform>().Construct(gameBalance, signalBus, tapState, indexOfLayer);
+        backPlatform.GetComponent<SimplePlatform>().Construct(gameBalance, signalBus, tapState, indexOfLayer);
+        
         SetPositionInArray(frontPlatform, backPlatform, numberOfPlatform);
     }
 
     private GameObject CreatePlatform(Transform parent, int coof) => Instantiate(
         original: platformPrefab,
-        position: new Vector3(0, coof * spaceBetweenLayer, distanceBetweenLayer),
+        position: new Vector3(0, coof * spaceBetweenLayers, distanceBetweenLayer),
         Quaternion.Euler(90, angleForPlatform, 0),
         parent: parent
     );
@@ -143,7 +115,7 @@ public class SimplePlatformLayer : MonoBehaviour, ILayer
     {
         if (AmountOfPlatforms == 3)
         {
-            SetPlatforms2Layer(frontPlatform, backPlatform, numberOfPlatform);
+            SetPlatformsSecondLayer(frontPlatform, backPlatform, numberOfPlatform);
         }
         else
         {
@@ -152,7 +124,7 @@ public class SimplePlatformLayer : MonoBehaviour, ILayer
         }
     }
 
-    private void SetPlatforms2Layer(GameObject frontPlatform, GameObject backPlatform, int numberOfPlatform)
+    private void SetPlatformsSecondLayer(GameObject frontPlatform, GameObject backPlatform, int numberOfPlatform)
     {
         var index1 = numberOfPlatform * 2;
         var index2 = numberOfPlatform == 0 ? 1 : numberOfPlatform * 2 + 1;
@@ -166,15 +138,6 @@ public class SimplePlatformLayer : MonoBehaviour, ILayer
         frontPlatforms[index2] = frontPlatform.GetComponent<Platform>();
         backPlatforms[index2] = backPlatform.GetComponent<Platform>();
         backPlatforms[index1] = backPlatform.GetComponent<Platform>();
-        SetIndexOfLayer(index1, index2);
-    }
-    
-    private void SetIndexOfLayer(int index1, int index2)
-    {
-        frontPlatforms[index1].indexOfLayer = indexOfLayer;
-        frontPlatforms[index2].indexOfLayer = indexOfLayer;
-        backPlatforms[index2].indexOfLayer = indexOfLayer;
-        backPlatforms[index1].indexOfLayer = indexOfLayer;
     }
 
     private void SetBackPlatformRotation(int angle, GameObject backPlatform)
@@ -189,10 +152,5 @@ public class SimplePlatformLayer : MonoBehaviour, ILayer
         frontPlatform.transform.RotateAround(Vector3.zero, Vector3.up, angle + 90);
         frontPlatform.GetComponent<Platform>().defaultAngleInLayer = 360 - angle;
     }
-
-    private void AdditionalComponents(GameObject platform)
-    {
-        platform.GetComponent<SimplePlatform>().signalBus = signalBus;
-        platform.GetComponent<Platform>().indexOfLayer = indexOfLayer;
-    }
+    
 }

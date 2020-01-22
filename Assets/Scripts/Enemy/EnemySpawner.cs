@@ -9,7 +9,8 @@ public class EnemySpawner
     private readonly Vector3 newEnemiesSpawnPoint = new Vector3(0, 15f, 0f);
     [Inject]
     private EnemyMover enemyMover;
-
+    [Inject] 
+    private GameBalance GameBalance;
     public EnemySpawner(GameObject enemyPrefab)
     {
         this.enemyPrefab = enemyPrefab;

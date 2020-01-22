@@ -18,31 +18,24 @@ public class Field : MonoBehaviour
     private void CreateLayers()
     {
         foreach (var layer in layers)
-        {
             layer.CreatePlatforms();
-        }
     }
 
     public void NextTurn()
     {
         foreach (var layer in layers)
-        {
             layer.NextTurn();
-        }
     }
     public void ChangeState()
     {
         foreach (var layer in layers)
-        {
             layer.ChangeState();
-        }
     }
     private void GetLayers()
     {
         var layers = new ILayer[transform.childCount];
-        for (var i = 0; i < transform.childCount; i++) {
+        for (var i = 0; i < transform.childCount; i++) 
             layers[i] = transform.GetChild(i).GetComponent<ILayer>();
-        }
         PlatformProvider.Instance.layers = layers;
     }
 
@@ -59,8 +52,6 @@ public class Field : MonoBehaviour
     private void DestroyLayers()
     {
         foreach (var layer in layers)
-        {
             layer.DestroyLayer();
-        }
     }
 }

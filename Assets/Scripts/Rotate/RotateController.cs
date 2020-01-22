@@ -148,7 +148,6 @@ public class RotateControllerForSecondLayer : IRotateController
         var copy = (Platform[]) platforms.Clone();
         var shift = 2;
         if (index2 == len - 1 && index1 == 0) shift *= -1;
-        
         copy[(index1 - shift + len) % len] = platforms[index1];
         copy[index1] = platforms[(index1 - shift + len) % len];
         

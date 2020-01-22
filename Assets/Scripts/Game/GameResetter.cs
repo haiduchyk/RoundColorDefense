@@ -25,7 +25,7 @@ public class GameResetter : MonoBehaviour
     {
         signalBus.Fire<RestartGameSignal>();
         gameEnded = false;
-        GameBalance.Reset();
+//        GameBalance.Reset();
         endScreen.SetActive(false);
     }
     

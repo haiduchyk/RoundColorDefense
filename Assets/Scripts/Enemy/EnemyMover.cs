@@ -24,7 +24,8 @@ public class EnemyMover
     private ResourceHolder resourceHolder;
     [Inject]
     private AudioManager audioManager;
-    [Inject] private GameResetter gameResetter;
+    [Inject] 
+    private GameResetter gameResetter;
     
     private void CreateEnemiesList()
     { 
@@ -237,7 +238,7 @@ public class EnemyMover
     private int AmountOfAliveEnemy(List<Enemy> enemies) => enemies.FindAll(enemy => !enemy.isDead).Count;
     private void DecreaseEnemyHp(Enemy enemy)
     {
-        var platform = (SimplePlatform) enemy.platform;
+        var platform = enemy.platform;
         var losedHp = enemy.futureHp - platform.SpikesAmount >= 0 ? platform.SpikesAmount : enemy.futureHp;
         signalBus.Fire(new GenerateCoinsSignal(losedHp, enemy.Target));
         enemy.futureHp -= platform.SpikesAmount;

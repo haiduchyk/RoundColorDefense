@@ -1,8 +1,6 @@
-﻿using System.Collections;
-using System.Collections.Generic;
-using UnityEngine;
+﻿using UnityEngine;
 
-public class PlatformState : MonoBehaviour
+public class PlatformState
 {
     public enum Type
     {

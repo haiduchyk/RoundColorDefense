@@ -6,7 +6,8 @@ using Zenject;
 
 public class SimplePlatform : Platform, IDoubleTapble, ISwipeble, ITapble
 {
-    public SignalBus signalBus;
+    private SignalBus signalBus;
+    private TapState tapState;
     private Renderer renderer;
     private TextPlatform priceView;
     [SerializeField] 
@@ -15,9 +16,15 @@ public class SimplePlatform : Platform, IDoubleTapble, ISwipeble, ITapble
     public ResourceHolder resourceHolder;
     private readonly Color32 initialColor = new Color32(130, 131, 161, 255);
     public int WallAmount;
-    
+    private GameBalance gameBalance;
     private const float highOfWall = 0.4f;
-    
+    public void Construct(GameBalance gameBalance, SignalBus signalBus, TapState tapState, int indexOfLayer)
+    {
+        this.gameBalance = gameBalance;
+        this.indexOfLayer = indexOfLayer;
+        this.signalBus = signalBus;
+        this.tapState = tapState;
+    }
     public int Price
     {
         get => Convert.ToInt32(priceView.nameLabel.text);
@@ -32,7 +39,7 @@ public class SimplePlatform : Platform, IDoubleTapble, ISwipeble, ITapble
     }
     public void OnDoubleTap(Platform platformComponent)
     {
-        if (TapState.Instance.State == TapState.TypeOfTap.Simple)
+        if (tapState.State == TapState.TypeOfTap.Simple)
         {
             StartCoroutine(layer.GetComponent<PositionStabilizer>().UpdateXZ(platformComponent));
         }
@@ -48,7 +55,7 @@ public class SimplePlatform : Platform, IDoubleTapble, ISwipeble, ITapble
     }
     public void OnTap()
     {
-        switch (TapState.Instance.State)
+        switch (tapState.State)
         {
             case TapState.TypeOfTap.Wall:
                 SetWallState();
@@ -63,25 +70,13 @@ public class SimplePlatform : Platform, IDoubleTapble, ISwipeble, ITapble
     }
     private void ReturnEnemy()
     {
-        if (!resourceHolder.ValidateOperation(Price))
-        {
-            return;
-        }
-
-        if (enemies.Any())
-        {
-            signalBus.Fire(new ReturnEnemySignal { platform = GetComponent<SimplePlatform>() });
-            UpdatePrice();
-        }
-
+        if (NotSuitableForReturn()) return;
+        signalBus.Fire(new ReturnEnemySignal { platform = this });
+        UpdatePrice();
     }
     private void SetSpikeState()
     {
-        var price = Convert.ToInt32(priceView.nameLabel.text);
-        if (!resourceHolder.ValidateOperation(price)) return;
-        
-        if (enemies.Count > 0) return;
-        if (State == PlatformState.Type.Wall) return;
+        if (NotSuitableForSpike()) return;
         CreateSpikes();
         state = PlatformState.Type.Spike;
         resourceHolder.DecreaseMoney(Price);
@@ -89,18 +84,18 @@ public class SimplePlatform : Platform, IDoubleTapble, ISwipeble, ITapble
     }
     private void SetWallState()
     {
-        if (!resourceHolder.ValidateOperation(Price))
-        {
-            return;
-        }
-        if (enemies.Count > 0) return;
-        if (State == PlatformState.Type.Spike) return;
+        if (NotSuitableForWall()) return;
         CreateWall();
         state = PlatformState.Type.Wall;
         resourceHolder.DecreaseMoney(Price);
-
         UpdatePrice();
     }
+    
+    private bool NotSuitableForSpike() => !resourceHolder.ValidateOperation(Price) || 
+                                          enemies.Count > 0 || State == PlatformState.Type.Wall;
+    private bool NotSuitableForWall() => !resourceHolder.ValidateOperation(Price) || 
+                                         enemies.Count > 0 || State == PlatformState.Type.Spike;
+    private bool NotSuitableForReturn() => !resourceHolder.ValidateOperation(Price) || enemies.Count < 0;
 
     public override void NextTurn()
     {
@@ -109,7 +104,7 @@ public class SimplePlatform : Platform, IDoubleTapble, ISwipeble, ITapble
 
     public override void ChangeState()
     {
-        if (TapState.Instance.State == TapState.TypeOfTap.Simple) TurnOffPriceView();
+        if (tapState.State == TapState.TypeOfTap.Simple) TurnOffPriceView();
         else TurnOnPriceView();
     }
 
@@ -141,17 +136,19 @@ public class SimplePlatform : Platform, IDoubleTapble, ISwipeble, ITapble
         transform.localScale = new Vector3(transform.localScale.x, transform.localScale.y, highOfWall);
         renderer.material.color = ColorProvider.Colors[WallAmount++ % lenOfColors];
     }
-    public void TurnOffPriceView()
+
+    private void TurnOffPriceView()
     {
         priceView.nameLabel.text = "";
     }
-    public void TurnOnPriceView()
+
+    private void TurnOnPriceView()
     {
-        Price = GameBalance.GetPrice(this);
+        Price = gameBalance.GetPrice(this);
         priceView.UpdatePosition();
     }
     private void UpdatePrice()
     {
-        Price = GameBalance.GetPrice(this);
+        Price = gameBalance.GetPrice(this);
     }
 }

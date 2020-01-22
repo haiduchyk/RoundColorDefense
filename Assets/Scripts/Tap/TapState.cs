@@ -3,8 +3,6 @@ using Zenject;
 
 public class TapState
 {
-    private static TapState instance;
-    public static TapState Instance => instance ?? (instance = new TapState());
     [Inject] 
     private SignalBus signalBus;
     public enum TypeOfTap

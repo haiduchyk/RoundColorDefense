@@ -1,8 +1,5 @@
-﻿using System.Collections;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using UnityEngine;
-using Zenject;
-
 
 public class Platform : MonoBehaviour
 {
@@ -18,4 +15,5 @@ public class Platform : MonoBehaviour
     public PlatformState.Type State => state;
     public virtual void NextTurn() {}
     public virtual void ChangeState() {}
+    private void Construct() { }
 }

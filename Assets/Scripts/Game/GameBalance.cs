@@ -1,19 +1,22 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
+using Zenject;
 using Random = UnityEngine.Random;
 
-public static class GameBalance
+public class GameBalance
 {
 
-    private static int turn;
-    private static int maxAmountOfEnemy = 12;
+    private int turn;
+    private int maxAmountOfEnemy = 12;
+    [Inject] 
+    private TapState tapState;
 
-    public static void Reset()
+    public void Reset()
     {
         turn = 0;
     }
     
-    public static int[] NextEnemiesStats()
+    public int[] NextEnemiesStats()
     { 
         turn++;
         var stats = GetStats();
@@ -21,7 +24,7 @@ public static class GameBalance
         return distributeStats;
     }
 
-    private static int[] Distribute(List<int> stats)
+    private int[] Distribute(List<int> stats)
     {
         var res = new int[maxAmountOfEnemy];
         var indexes = Enumerable.Range(0, maxAmountOfEnemy - 1).ToList();
@@ -38,7 +41,7 @@ public static class GameBalance
         return res;
     }
     
-    private static List<int> GetStats()
+    private List<int> GetStats()
     {
         var amount = Random.Range(1, maxAmountOfEnemy / 2) + Random.Range(1, maxAmountOfEnemy / 2);
         var list = new List<int>();
@@ -50,10 +53,10 @@ public static class GameBalance
         return list;
     }
     
-    public static int GetPrice(SimplePlatform platform)
+    public int GetPrice(SimplePlatform platform)
     {
-        var price = 0;
-        switch (TapState.Instance.State)
+        var price = -1;
+        switch (tapState.State)
         {
             case TapState.TypeOfTap.Wall:
                 price = PriceForWall(platform);
@@ -68,7 +71,7 @@ public static class GameBalance
         return price;
     }
     
-    private static int PriceForSpikes(SimplePlatform platform) => (4 - platform.indexOfLayer) + platform.SpikesAmount * 3 / 2;
-    private static int PriceForReturn(SimplePlatform platform) => (4 - platform.indexOfLayer) * turn / 2;
-    private static int PriceForWall(SimplePlatform platform) => (4 - platform.indexOfLayer) * turn / 5 + platform.WallAmount;
+    private int PriceForSpikes(SimplePlatform platform) => (4 - platform.indexOfLayer) + platform.SpikesAmount * 3 / 2;
+    private int PriceForReturn(SimplePlatform platform) => (4 - platform.indexOfLayer) * turn / 2;
+    private int PriceForWall(SimplePlatform platform) => (4 - platform.indexOfLayer) * turn / 5 + platform.WallAmount;
 }

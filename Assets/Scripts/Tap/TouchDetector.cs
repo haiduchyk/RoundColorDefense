@@ -10,7 +10,10 @@ public class TouchDetector : MonoBehaviour {
   private SimplePlatformLayer simplePlatformLayer;
   [Inject] 
   private SignalBus signalBus;
-  [Inject] private AudioManager audioManager;
+  [Inject] 
+  private AudioManager audioManager;
+  [Inject] 
+  private TapState tapState;
   private void Start () {
       EasyTouch.On_SwipeEnd += OnSwipeEnd;
       EasyTouch.On_SwipeStart += OnSwipeStart;
@@ -21,7 +24,7 @@ public class TouchDetector : MonoBehaviour {
   private void OnDoubleTap(Gesture gesture)
   {
       platform = gesture.pickedObject;
-      if (TapState.TypeOfTap.Simple != TapState.Instance.State) return;
+      if (TapState.TypeOfTap.Simple != tapState.State) return;
       var doubleTap = platform?.GetComponent<IDoubleTapble>();
       doubleTap?.OnDoubleTap(platform.GetComponent<Platform>());
   }
