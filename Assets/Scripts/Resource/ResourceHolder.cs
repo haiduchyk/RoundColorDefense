@@ -27,7 +27,7 @@ public class ResourceHolder : MonoBehaviour
         Score = 0;
     }
     
-    public void DecreaseMoney(int amount) => Coins -= amount;
+    public void DecreaseMoney(DecreaseMoneySignal signal) => Coins -= signal.amount;
     public bool ValidateOperation(int price) => Coins >= price;
 
     public int Score

@@ -6,8 +6,6 @@ public class GameResetter : MonoBehaviour
 {
     [SerializeField]
     private GameObject endScreen;
-    [SerializeField] 
-    private HighScore highScore;
     [Inject] 
     private ResourceHolder resourceHolder;
     [Inject] 
@@ -16,7 +14,6 @@ public class GameResetter : MonoBehaviour
     public bool gameEnded;
     public void EndGame()
     {
-        if (!gameEnded) return;
         EasyTouch.SetEnabled(true);
         endScreen.SetActive(true);
     }
@@ -24,8 +21,6 @@ public class GameResetter : MonoBehaviour
     public void Restart()
     {
         signalBus.Fire<RestartGameSignal>();
-        gameEnded = false;
-//        GameBalance.Reset();
         endScreen.SetActive(false);
     }
     

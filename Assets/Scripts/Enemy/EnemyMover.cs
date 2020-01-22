@@ -13,7 +13,7 @@ public class EnemyMover
     const int amountOfLayers = 6;
     private readonly List<Task> tasks = new List<Task>();
     private List<Enemy>[] allEnemies = new List<Enemy>[amountOfLayers];
-    
+    private bool gameEnded;
     [Inject]
     private EnemySpawner enemySpawner;
     [Inject]
@@ -24,8 +24,6 @@ public class EnemyMover
     private ResourceHolder resourceHolder;
     [Inject]
     private AudioManager audioManager;
-    [Inject] 
-    private GameResetter gameResetter;
     
     private void CreateEnemiesList()
     { 
@@ -115,12 +113,10 @@ public class EnemyMover
         if (!success) audioManager.Play("cancel");
         else
         {
-            resourceHolder.DecreaseMoney(signal.platform.Price);
+            signalBus.Fire(new DecreaseMoneySignal { amount = signal.platform.Price });
             MakeStepAnimation(new List<Enemy>() {enemy}, speedForSimpleMove);
             CheckForTrigger(new List<Enemy>() {enemy});
-            await Task.WhenAll(tasks);
-            UpdateHp();
-            ClearDeadEnemies();
+            AfterMovementOperations();
         }
         EasyTouch.SetEnabled(true);
     }
@@ -130,7 +126,7 @@ public class EnemyMover
         EasyTouch.SetEnabled(false);
         await MoveExistEnemies();
         await AfterMovementOperations();
-        if (gameResetter.gameEnded) return;
+        if (gameEnded) return;
         
         var newEnemies = CreateEnemies();
         await MoveNewEnemies(newEnemies);
@@ -144,7 +140,7 @@ public class EnemyMover
         await Task.WhenAll(tasks);
         ClearDeadEnemies();
         UpdateHp();
-        if (gameResetter.gameEnded) gameResetter.EndGame();
+        if (gameEnded) signalBus.Fire<EndGameSignal>();
     }
 
 
@@ -248,6 +244,7 @@ public class EnemyMover
     public void Reset()
     {
         CreateEnemiesList();
+        gameEnded = false;
     }
 
     private void MergeEnemies(List<Enemy> enemies)
@@ -274,7 +271,7 @@ public class EnemyMover
     private void EndGame(Enemy enemy)
     {
         KillEnemy(enemy);
-        gameResetter.gameEnded = true;
+        gameEnded = true;
     }
 
     public void DisconnectEnemy(Enemy enemy)

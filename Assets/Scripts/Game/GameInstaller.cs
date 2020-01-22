@@ -32,7 +32,6 @@ public class GameInstaller : MonoInstaller
         Container.Bind<EnemySpawner>().AsSingle().WithArguments(enemyPrefab);
         Container.Bind<GameBalance>().AsSingle();
         Container.Bind<TapState>().AsSingle();
-
         
         SignalBusInstaller.Install(Container);
 
@@ -43,8 +42,8 @@ public class GameInstaller : MonoInstaller
         Container.DeclareSignal<RestartGameSignal>();
         Container.DeclareSignal<InitGameSignal>();
         Container.DeclareSignal<GenerateCoinsSignal>();
-        Container.DeclareSignal<CoinRecievedSignal>();
-
+        Container.DeclareSignal<CoinReceivedSignal>();
+        Container.DeclareSignal<DecreaseMoneySignal>();
 
         Container.BindSignal<NextTurnSignal>()
             .ToMethod<EnemyMover>(x => x.NextTurn).FromResolve();
@@ -77,7 +76,11 @@ public class GameInstaller : MonoInstaller
         
         Container.BindSignal<GenerateCoinsSignal>()
             .ToMethod<CoinGenerator>(x => x.GenerateCoins).FromResolve();
+
+        Container.BindSignal<EndGameSignal>()
+            .ToMethod<GameResetter>(x => x.EndGame).FromResolve();
         
-        
+        Container.BindSignal<DecreaseMoneySignal>()
+            .ToMethod<ResourceHolder>(x => x.DecreaseMoney).FromResolve();
     }
 }

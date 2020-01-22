@@ -7,7 +7,7 @@ using Zenject;
 public class ActionButton : MonoBehaviour
 {
     public Sprite on, off;
-    Image spriteRender;
+    private Image spriteRender;
     private bool isActivated;
     private RectTransform rectTransform;
     [SerializeField]
@@ -15,8 +15,7 @@ public class ActionButton : MonoBehaviour
     private TapState.TypeOfTap CurType => !isActivated ? buttonState : TapState.TypeOfTap.Simple;
     [Inject]
     private SignalBus signalBus;
-
-    private int size = 40;
+    private int additionalSize = 40;
     
     private void Start()
     {
@@ -59,11 +58,11 @@ public class ActionButton : MonoBehaviour
     private void IncreaseSize()
     {
         var rect = rectTransform.rect; 
-        rectTransform.sizeDelta = new Vector2(rect.width + size, rect.height + size);
+        rectTransform.sizeDelta = new Vector2(rect.width + additionalSize, rect.height + additionalSize);
     }
     private void DecreaseSize()
     {
         var rect = rectTransform.rect; 
-        rectTransform.sizeDelta = new Vector2(rect.width - size, rect.height - size);
+        rectTransform.sizeDelta = new Vector2(rect.width - additionalSize, rect.height - additionalSize);
     }
 }

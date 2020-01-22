@@ -79,7 +79,7 @@ public class SimplePlatform : Platform, IDoubleTapble, ISwipeble, ITapble
         if (NotSuitableForSpike()) return;
         CreateSpikes();
         state = PlatformState.Type.Spike;
-        resourceHolder.DecreaseMoney(Price);
+        DecreaseMoney();
         UpdatePrice();
     }
     private void SetWallState()
@@ -87,8 +87,13 @@ public class SimplePlatform : Platform, IDoubleTapble, ISwipeble, ITapble
         if (NotSuitableForWall()) return;
         CreateWall();
         state = PlatformState.Type.Wall;
-        resourceHolder.DecreaseMoney(Price);
+        DecreaseMoney();
         UpdatePrice();
+    }
+
+    private void DecreaseMoney()
+    {
+        signalBus.Fire(new DecreaseMoneySignal { amount = Price });
     }
     
     private bool NotSuitableForSpike() => !resourceHolder.ValidateOperation(Price) || 
